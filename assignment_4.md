@@ -8,6 +8,20 @@ Install them if they are not installed yet.
 
 ``` r
 library(tidyverse)
+```
+
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+    ## ✔ purrr     1.0.2     
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+``` r
 library(knitr)
 ```
 
@@ -35,6 +49,10 @@ economist_data <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-d
 
 #### 1.1 Show the first few rows of `economist_data`.
 
+``` r
+kable(head(economist_data))
+```
+
 |   X | Country     | HDI.Rank |   HDI | CPI | Region            |
 |----:|:------------|---------:|------:|----:|:------------------|
 |   1 | Afghanistan |      172 | 0.398 | 1.5 | Asia Pacific      |
@@ -48,11 +66,22 @@ economist_data <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-d
 
 #### 1.2 Expore the relationship between human development index (`HDI`) and corruption perception index (`CPI`) with a scatter plot as the following.
 
+``` r
+library(ggplot2)
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(x = CPI, y = HDI))
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 <br>
 
 **1.3 Make the color of all points in the previous plot red.**
+
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(x = CPI, y = HDI), color = "red")
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -61,16 +90,36 @@ economist_data <- read.csv("https://raw.githubusercontent.com/nt246/NTRES-6100-d
 **1.4 Color the points in the previous plot according to the `Region`
 variable, and set the size of points to 2.**
 
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(x = CPI, y = HDI, colour = Region))
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 <br>
 
 **1.5 Set the size of the points proportional to `HDI.Rank`**
 
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(x = CPI, y = HDI, colour = Region, size = HDI.Rank)) +
+  guides(
+    colour = guide_legend(order = 1),
+    size = guide_legend(order = 2)
+  )
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-7-1.png)<!-- --> <br>
 
 **1.6 Fit a smoothing line to all the data points in the scatter plot
 from Excercise 1.4**
+
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(x = CPI, y = HDI, colour = Region)) +
+  geom_smooth(mapping = aes(x = CPI, y = HDI))
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
@@ -79,6 +128,12 @@ from Excercise 1.4**
 **1.7 Fit a separate straight line for each region instead, and turn off
 the confidence interval.**
 
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(y = HDI, x = CPI, colour = Region)) +
+  geom_smooth(mapping = aes(y = HDI, x = CPI, colour = Region), method = "lm", se = F)
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 <br>
@@ -86,10 +141,22 @@ the confidence interval.**
 **1.8 Building on top of the previous plot, show each `Region` in a
 different facet.**
 
+``` r
+ggplot(data = economist_data) + 
+  geom_point(mapping = aes(y = HDI, x = CPI, colour = Region)) +
+  geom_smooth(mapping = aes(y = HDI, x = CPI, colour = Region), method = "lm", se = F) +
+  facet_wrap(~ Region, nrow = 2)
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 **1.9 Show the distribution of `HDI` in each region using density plot.
 Set the transparency to 0.5**
+
+``` r
+ggplot(economist_data) +
+  geom_density(mapping = aes(fill = Region, x = HDI), alpha = 0.5)
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
@@ -97,6 +164,12 @@ Set the transparency to 0.5**
 
 **1.10 Show the distribution of `HDI` in each region using histogram and
 facetting.**
+
+``` r
+ggplot(economist_data) +
+  geom_histogram(aes(x = HDI, fill = Region)) + 
+  facet_wrap(~ Region, nrow = 2)
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
@@ -108,11 +181,22 @@ points with the box plot. Instead, show all data points for each country
 in the same plot. (Hint: `geom_jitter()` or `position_jitter()` might be
 useful.)**
 
+``` r
+ggplot(economist_data, aes(x = Region, y = HDI)) +
+  geom_boxplot(mapping = aes(x = Region, y = HDI, fill = Region, colour = Region), alpha = 0.5, outliers = F) +
+  geom_jitter(aes(colour = Region))
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 <br>
 
 **1.12 Show the count of countries in each region using a bar plot.**
+
+``` r
+ggplot(economist_data, aes(x = Region)) +
+  geom_bar()
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
@@ -160,6 +244,13 @@ through RMarkdown **using the kable() function**, as shown above.
 **2.1 Select columns that contain a lower case “t” in the `Theoph`
 dataset. Do not manually list all the columns to include.**
 
+``` r
+Theoph %>%  
+  select(matches("t", ignore.case = F)) %>% 
+  head() %>% 
+  kable()
+```
+
 | Subject |   Wt |
 |:--------|-----:|
 | 1       | 79.6 |
@@ -173,6 +264,12 @@ dataset. Do not manually list all the columns to include.**
 
 **2.2 Rename the `Wt` column to `Weight` and `conc` column to
 `Concentration` in the `Theoph` dataset.**
+
+``` r
+rename(Theoph, c("Weight" = "Wt", "Concentration" = "conc")) %>% 
+  head() %>% 
+  kable()
+```
 
 | Subject | Weight | Dose | Time | Concentration |
 |:--------|-------:|-----:|-----:|--------------:|
@@ -188,6 +285,13 @@ dataset. Do not manually list all the columns to include.**
 **2.3 Extract the `Dose` greater than 4.5 and `Time` greater than the
 mean `Time`.**
 
+``` r
+Theoph %>% 
+  filter(Dose > 4.5 & Time > mean(Time)) %>% 
+  head() %>% 
+  kable()
+```
+
 | Subject |   Wt | Dose |  Time | conc |
 |:--------|-----:|-----:|------:|-----:|
 | 3       | 70.5 | 4.53 |  7.07 | 5.30 |
@@ -201,6 +305,14 @@ mean `Time`.**
 
 **2.4 Sort the `Theoph` dataset by `Wt` from smallest to largest and
 secondarily by Time from largest to smallest.**
+
+``` r
+Theoph %>% 
+  filter(Wt == min(Theoph$Wt)) %>% 
+  arrange(desc(Time)) %>% 
+  head() %>% 
+  kable()
+```
 
 | Subject |   Wt | Dose |  Time | conc |
 |:--------|-----:|-----:|------:|-----:|
@@ -218,6 +330,14 @@ in the `Theoph` dataset. This will tell you the absolute quantity of
 drug administered to the subject (in mg). Replace the `Dose` variable
 with `Quantity`.**
 
+``` r
+Theoph %>% 
+  mutate(Quantity = Wt * Dose) %>% 
+  select(Subject, Wt, Quantity, Time, conc) %>% 
+  head() %>% 
+  kable()
+```
+
 | Subject |   Wt | Quantity | Time |  conc |
 |:--------|-----:|---------:|-----:|------:|
 | 1       | 79.6 |  319.992 | 0.00 |  0.74 |
@@ -233,6 +353,17 @@ with `Quantity`.**
 subject. Show data for the 6 subjects with the smallest sum of `Dose` as
 below. **Do not define new intermediate objects for this exercise; use
 pipes to chain together functions**.**
+
+``` r
+Theoph %>% 
+  group_by(Subject) %>% 
+  summarise(
+    mean_conc = mean(conc),
+    sum_dose = sum(Dose)) %>% 
+  arrange(sum_dose) %>% 
+  head() %>% 
+  kable()
+```
 
 | Subject | mean_conc | sum_dose |
 |:--------|----------:|---------:|
@@ -272,6 +403,11 @@ variables, in the US from 1967 to 2015.
 time using the economics dataset shown above. And for this question
 only, hide your code and only show the plot.**
 
+``` r
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemploy))
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 <br>
@@ -279,6 +415,16 @@ only, hide your code and only show the plot.**
 **3.2 Edit the plot title and axis labels of the previous plot
 appropriately. Make y axis start from 0. Change the background theme to
 what is shown below. (Hint: search for help online if needed)**
+
+``` r
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemploy)) +
+  xlab("Year") +
+  ylab("Number of unemployed persons (in thousands)") +
+  ggtitle("Unemployment in the US 1967-2015") +
+  ylim(c(0,16000)) +
+  theme_light(base_line_size = T, base_rect_size = F) 
+```
 
 ![](assignment_4_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
@@ -290,6 +436,17 @@ by population growth? Use a figure to answer this question.**
 Hint: you can plot the trend in unemployment rate instead of the number
 of unemployed persons
 
+``` r
+economics <- economics %>% 
+  mutate(unemployment_rate = unemploy/pop * 100)
+ggplot(economics) +
+  geom_line(mapping = aes(x = date, y = unemployment_rate)) +
+  ylab("Unemployment rate (%)") +
+  xlab("Year") +
+  ggtitle("Unemployment rate") +
+  theme_light() 
+```
+
 ![](assignment_4_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 **3.4 Which years in this dataset have the highest unemployment rate on
@@ -297,6 +454,16 @@ average? List the top five of them in a table.** Hint: the year()
 function in the package lubridate could be useful for this question, in
 combination with mutate(), group_by(), summarize(), arrange(), and
 head()
+
+``` r
+economics %>% 
+  group_by(year(date)) %>% 
+  summarize(
+    mean = mean(unemployment_rate)) %>% 
+  arrange(desc(mean)) %>% 
+  head() %>% 
+  kable()
+```
 
 | year(date) |     mean |
 |-----------:|---------:|

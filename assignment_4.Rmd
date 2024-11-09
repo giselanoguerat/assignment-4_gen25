@@ -1,7 +1,7 @@
 ---
 title: "Assignment 4: Data transformation and visualization"
 student: "Gisela Noguera Toffoletti"
-output: html_document
+output: github_document
 ---
 ## Load packages
 
