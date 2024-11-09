@@ -8,7 +8,7 @@ output: github_document
 To start, load all the required packages with the following code.
 Install them if they are not installed yet.
 
-```{r, message = TRUE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(knitr)
 ```
